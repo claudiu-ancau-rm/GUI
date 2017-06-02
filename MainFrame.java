@@ -179,7 +179,7 @@ public class MainFrame
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
         //patratele principale unde sunt culorile pe care trebie sa le ghicim
 
-        construirePoligon(culoare(culoareRandom()), new float[]{1, 5, 1, 5});
+        construirePoligon(culoare("verde"), new float[]{1, 5, 1, 5});
         construirePoligon(culoare(culoareRandom()), new float[]{5, 9, 5, 1});
         construirePoligon(culoare(culoareRandom()), new float[]{1, -3, 1, 5});
 
