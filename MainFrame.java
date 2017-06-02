@@ -122,8 +122,21 @@ public class MainFrame
         gl.glEnd();
     }
 
-    public float[] culoareCorecta() {
-        return culoare("alb");
+    public float[] culoareCorecta(int numarulPatratului) {
+        String culoare = null;
+        switch (numarulPatratului) {
+            case 1:
+                culoare = "alb";
+                break;
+            case 2:
+                culoare = "verde";
+                break;
+            case 3:
+                culoare = "albastru";
+                break;
+
+        }
+        return culoare(culoare);
     }
 
     public float[] culoareAleasa() {
@@ -172,6 +185,7 @@ public class MainFrame
 
         Random randomizer = new Random();
         String random = list.get(randomizer.nextInt(5));
+        System.out.println(random);
         return random;
     }
 
@@ -180,9 +194,9 @@ public class MainFrame
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
         //patratele principale unde sunt culorile pe care trebie sa le ghicim
 
-        construirePoligon(culoare("verde"), new float[]{1, 5, 1, 5});
-        construirePoligon(culoare("rosu"), new float[]{5, 9, 5, 1});
-        construirePoligon(culoare(culoareRandom()), new float[]{1, -3, 1, 5});
+        construirePoligon(culoare("alb"), new float[]{1, 4.9f, 1, 5});
+        construirePoligon(culoare("alb"), new float[]{5, 8.9f, 5, 1});
+        construirePoligon(culoare("alb"), new float[]{0.9f, -3, 1, 5});
 
         //zona unde sunt incercarile de pana acum
 
@@ -193,19 +207,19 @@ public class MainFrame
         while (i < 15) {
             float[] culoare = new float[]{1, 1, 1};
             cordonateRaspunsuriGresite(culoareAleasa(), i, 0);
-            if (culoareAleasa() == culoareCorecta())
+            if (culoareAleasa() == culoareCorecta(1))
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 0);
             else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 0);
 
             cordonateRaspunsuriGresite(culoareAleasa(), i, 0.5f);
-            if (culoareAleasa() == culoareCorecta())
+            if (culoareAleasa() == culoareCorecta(1))
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 0.5f);
             else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 0.5f);
 
             cordonateRaspunsuriGresite(culoareAleasa(), i, 1);
-            if (culoareAleasa() == culoareCorecta())
+            if (culoareAleasa() == culoareCorecta(1))
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 1);
             else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 1);
