@@ -169,8 +169,9 @@ public class MainFrame
         list.add("verde");
         list.add("albastru");
         list.add("alb");
+
         Random randomizer = new Random();
-        String random = list.get(randomizer.nextInt(list.size()));
+        String random = list.get(randomizer.nextInt(5));
         return random;
     }
 
@@ -180,7 +181,7 @@ public class MainFrame
         //patratele principale unde sunt culorile pe care trebie sa le ghicim
 
         construirePoligon(culoare("verde"), new float[]{1, 5, 1, 5});
-        construirePoligon(culoare(culoareRandom()), new float[]{5, 9, 5, 1});
+        construirePoligon(culoare("rosu"), new float[]{5, 9, 5, 1});
         construirePoligon(culoare(culoareRandom()), new float[]{1, -3, 1, 5});
 
         //zona unde sunt incercarile de pana acum
