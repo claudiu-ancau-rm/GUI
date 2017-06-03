@@ -14,6 +14,7 @@ public class MainFrame
 
     private GLCanvas canvas;
     private Animator animator;
+    static final private String a = "";
 
     // For specifying the positions of the clipping planes (increase/decrease the distance) modify this variable.
     // It is used by the glOrtho method.
@@ -122,28 +123,16 @@ public class MainFrame
         gl.glEnd();
     }
 
-    public float[] culoareCorecta(int numarulPatratului) {
-        String culoare = null;
-        switch (numarulPatratului) {
-            case 1:
-                culoare = "alb";
-                break;
-            case 2:
-                culoare = "verde";
-                break;
-            case 3:
-                culoare = "albastru";
-                break;
-
-        }
-        return culoare(culoare);
+    public String[] culoareCorecta() {
+        String[] listaCuloriCorecte = new String[]{"rosu", "galben", "verde"};
+        return listaCuloriCorecte;
     }
+    //reprezinta culoarea aleasa, acesta functie va primi rezultatul de la eventul de dat click pe una din cele 6 culori
+    public String culoareAleasa() {
 
-    public float[] culoareAleasa() {
-
-        return culoare("alb");
+        return "alb";
     }
-
+    //definesc culorile
     public float[] culoare(String culoare) {
         float[] combinatieCuloare;
         switch (culoare) {
@@ -174,7 +163,7 @@ public class MainFrame
 
         return combinatieCuloare;
     }
-
+    //genereaza o culoare random, deocamdata nefunctional
     public String culoareRandom() {
         List<String> list = new ArrayList<String>();
         list.add("rosu");
@@ -182,10 +171,9 @@ public class MainFrame
         list.add("verde");
         list.add("albastru");
         list.add("alb");
-
+        list.add("gri");
         Random randomizer = new Random();
-        String random = list.get(randomizer.nextInt(5));
-        System.out.println(random);
+        String random = list.get(randomizer.nextInt(list.size()));
         return random;
     }
 
@@ -194,9 +182,9 @@ public class MainFrame
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
         //patratele principale unde sunt culorile pe care trebie sa le ghicim
 
-        construirePoligon(culoare("alb"), new float[]{1, 4.9f, 1, 5});
-        construirePoligon(culoare("alb"), new float[]{5, 8.9f, 5, 1});
-        construirePoligon(culoare("alb"), new float[]{0.9f, -3, 1, 5});
+        construirePoligon(culoare(culoareCorecta()[0]), new float[]{1, 4.9f, 1, 5});
+        construirePoligon(culoare(culoareCorecta()[1]), new float[]{5, 8.9f, 5, 1});
+        construirePoligon(culoare(culoareCorecta()[2]), new float[]{0.9f, -3, 1, 5});
 
         //zona unde sunt incercarile de pana acum
 
@@ -205,21 +193,20 @@ public class MainFrame
         //combinatia de culori incercata
         int i = 0;
         while (i < 15) {
-            float[] culoare = new float[]{1, 1, 1};
-            cordonateRaspunsuriGresite(culoareAleasa(), i, 0);
-            if (culoareAleasa() == culoareCorecta(1))
+            cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 0);
+            if ("rosu" == culoareCorecta()[0])
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 0);
             else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 0);
 
-            cordonateRaspunsuriGresite(culoareAleasa(), i, 0.5f);
-            if (culoareAleasa() == culoareCorecta(1))
+            cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 0.5f);
+            if (culoareAleasa() == culoareCorecta()[1])
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 0.5f);
             else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 0.5f);
 
-            cordonateRaspunsuriGresite(culoareAleasa(), i, 1);
-            if (culoareAleasa() == culoareCorecta(1))
+            cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 1);
+            if (culoareAleasa() == culoareCorecta()[2])
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 1);
             else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 1);
@@ -228,12 +215,12 @@ public class MainFrame
 
         //culorile din care trebuie sa alegem
 
-        construirePoligon(new float[]{1, 1, 1}, new float[]{-5, -2, -8, -5});
-        construirePoligon(new float[]{0, 1, 1}, new float[]{-2, 1, -8, -5});
-        construirePoligon(new float[]{0, 0, 1}, new float[]{1, 4, -8, -5});
-        construirePoligon(new float[]{1, 0, 1}, new float[]{4, 7, -8, -5});
-        construirePoligon(new float[]{1, 1, 0}, new float[]{7, 10, -8, -5});
-        construirePoligon(new float[]{1, 0, 0}, new float[]{10, 13, -8, -5});
+        construirePoligon(culoare("rosu"), new float[]{-5, -2.1f, -8, -5});
+        construirePoligon(culoare("verde"), new float[]{-2, 0.9f, -8, -5});
+        construirePoligon(culoare("galben"), new float[]{1, 3.9f, -8, -5});
+        construirePoligon(culoare("albastru"), new float[]{4, 6.9f, -8, -5});
+        construirePoligon(culoare("alb"), new float[]{7, 9.9f, -8, -5});
+        construirePoligon(culoare("gri"), new float[]{10, 12.9f, -8, -5});
 
 
     }
