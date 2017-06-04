@@ -3,9 +3,9 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.gl2.GLUT;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,13 +16,12 @@ public class MainFrame
 
     private GLCanvas canvas;
     private Animator animator;
-    private final int NO_TEXTURES = 1;
-    private int texture[] = new int[NO_TEXTURES];
-    TextureReader.Texture[] tex = new TextureReader.Texture[NO_TEXTURES];
     private GLU glu;
+    private GLUT glut;
     String PRIMA_CULOARE;
     String CULOAREA_DOI;
     String CULOAREA_TREI;
+    private TextureHandler texture1;
     // For specifying the positions of the clipping planes (increase/decrease the distance) modify this variable.
     // It is used by the glOrtho method.
     private double v_size = 10.0;
@@ -80,40 +79,13 @@ public class MainFrame
         CULOAREA_DOI = culoareRandom();
         CULOAREA_TREI = culoareRandom();
         GL2 gl = canvas.getGL().getGL2();
+
         // Create a new GLU object.
         glu = GLU.createGLU();
-
-        // Generate a name (id) for the texture.
-        // This is called once in init no matter how many textures we want to generate in the texture vector
-        gl.glGenTextures(NO_TEXTURES, texture, 0);
-
-        // Define the filters used when the texture is scaled.
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-
-        // Do not forget to enable texturing.
-        gl.glEnable(GL.GL_TEXTURE_2D);
-
-        // The following lines are for creating ONE texture
-        // If you want TWO textures modify NO_TEXTURES=2 and copy-paste again the next lines of code
-        // up until (and including) this.makeRGBTexture(...)
-        // Modify texture[0] and tex[0] to texture[1] and tex[1] in the new code and that's it
-
-        // Bind (select) the texture.
-        gl.glBindTexture(GL.GL_TEXTURE_2D, texture[0]);
-
-        // Read the texture from the image.
-        try {
-            tex[0] = TextureReader.readTexture("a.PNG");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-
-        // Construct the texture and use mipmapping in the process.
-        this.makeRGBTexture(gl, glu, tex[0], GL.GL_TEXTURE_2D, true);
+        glut = new GLUT();
+        texture1 = new TextureHandler(gl, glu, "texture1.jpg", true);
         // Setting the clear color -- the color which will be used to erase the canvas.
-        gl.glClearColor(0, 0, 0, 0);
+        gl.glClearColor(0, 0.5f, 0.5f, 0);
 
         // Selecting the modelview matrix.
         gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
@@ -166,7 +138,7 @@ public class MainFrame
         gl.glEnd();
     }
 
-    //un strin cu numele celor 3 culori care trebuie ghicite
+    //un string cu numele celor 3 culori care trebuie ghicite
     public String[] culoareCorecta() {
         String[] listaCuloriCorecte = new String[]{PRIMA_CULOARE, CULOAREA_DOI, CULOAREA_TREI};
         return listaCuloriCorecte;
@@ -178,7 +150,7 @@ public class MainFrame
         return PRIMA_CULOARE;
     }
 
-    //definesc culorile
+    //definesc culorile pe care le folosesc
     public float[] culoare(String culoare) {
         float[] combinatieCuloare;
         switch (culoare) {
@@ -216,7 +188,7 @@ public class MainFrame
         return combinatieCuloare;
     }
 
-    //genereaza o culoare random, deocamdata nefunctional
+    //genereaza o culoare random
     public String culoareRandom() {
         List<String> list = new ArrayList<String>();
         list.add("rosu");
@@ -224,7 +196,7 @@ public class MainFrame
         list.add("verde");
         list.add("albastru");
         list.add("orange");
-        list.add("gri");
+        list.add("mov");
         Random randomizer = new Random();
         String random = list.get(randomizer.nextInt(list.size()));
         return random;
@@ -247,9 +219,12 @@ public class MainFrame
         int i = 0;
         while (i < 15) {
             cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 0);
-            if (culoareAleasa() == culoareCorecta()[0])
+            if (culoareAleasa() == culoareCorecta()[0]) {
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 0);
-            else
+                gl.glRasterPos2d(0, -0.5);
+                glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "Ai castigat!");
+
+            } else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 0);
 
             cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 0.5f);
@@ -273,16 +248,15 @@ public class MainFrame
         construirePoligon(culoare("albastru"), new float[]{4, 6.9f, -8, -5});
         construirePoligon(culoare("orange"), new float[]{7, 9.9f, -8, -5});
         construirePoligon(culoare("mov"), new float[]{10, 12.9f, -8, -5});
+        texture1.bind();
+        texture1.enable();
+        gl.glBegin(GL2.GL_POLYGON);
+        gl.glVertex2f(1, 4);
+        gl.glVertex2f(4, 4);
+        gl.glVertex2f(4, 1);
+        gl.glVertex2f(1, 1);
+        gl.glEnd();
 
-
-    }
-
-    private void makeRGBTexture(GL gl, GLU glu, TextureReader.Texture img, int target, boolean mipmapped) {
-        if (mipmapped) {
-            glu.gluBuild2DMipmaps(target, GL.GL_RGB8, img.getWidth(), img.getHeight(), GL.GL_RGB, GL.GL_UNSIGNED_BYTE, img.getPixels());
-        } else {
-            gl.glTexImage2D(target, 0, GL.GL_RGB, img.getWidth(), img.getHeight(), 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, img.getPixels());
-        }
     }
 
     public void reshape(GLAutoDrawable canvas, int left, int top, int width, int height) {
