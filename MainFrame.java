@@ -6,13 +6,17 @@ import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.gl2.GLUT;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class MainFrame
         extends JFrame
-        implements GLEventListener {
+        implements GLEventListener, MouseListener,
+        MouseMotionListener {
 
     private GLCanvas canvas;
     private Animator animator;
@@ -21,6 +25,9 @@ public class MainFrame
     String PRIMA_CULOARE;
     String CULOAREA_DOI;
     String CULOAREA_TREI;
+    private int mouseX, mouseY;
+    private int mode = GL2.GL_RENDER;
+
     private TextureHandler texture1;
     // For specifying the positions of the clipping planes (increase/decrease the distance) modify this variable.
     // It is used by the glOrtho method.
@@ -60,6 +67,9 @@ public class MainFrame
 
         // Creating an OpenGL display widget -- canvas.
         this.canvas = new GLCanvas(capabilities);
+        this.canvas.addMouseListener(this);
+        this.canvas.addMouseMotionListener(this);
+
 
         // Adding the canvas in the center of the frame.
         this.getContentPane().add(this.canvas);
@@ -73,6 +83,7 @@ public class MainFrame
         // Starting the animator.
         this.animator.start();
     }
+
 
     public void init(GLAutoDrawable canvas) {
         PRIMA_CULOARE = culoareRandom();
@@ -202,10 +213,7 @@ public class MainFrame
         return random;
     }
 
-    public void display(GLAutoDrawable canvas) {
-        GL2 gl = canvas.getGL().getGL2();
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-
+    private void construireScena(GL2 gl) {
         //patratele principale unde sunt culorile pe care trebie sa le ghicim
         construirePoligon(culoare(culoareCorecta()[0]), new float[]{0.9f, -3, 1, 5});
         construirePoligon(culoare(culoareCorecta()[1]), new float[]{1, 4.9f, 1, 5});
@@ -221,8 +229,6 @@ public class MainFrame
             cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 0);
             if (culoareAleasa() == culoareCorecta()[0]) {
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 0);
-                gl.glRasterPos2d(0, -0.5);
-                glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "Ai castigat!");
 
             } else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 0);
@@ -248,7 +254,7 @@ public class MainFrame
         construirePoligon(culoare("albastru"), new float[]{4, 6.9f, -8, -5});
         construirePoligon(culoare("orange"), new float[]{7, 9.9f, -8, -5});
         construirePoligon(culoare("mov"), new float[]{10, 12.9f, -8, -5});
-        texture1.bind();
+       /* texture1.bind();
         texture1.enable();
         gl.glBegin(GL2.GL_POLYGON);
         gl.glVertex2f(1, 4);
@@ -256,8 +262,61 @@ public class MainFrame
         gl.glVertex2f(4, 1);
         gl.glVertex2f(1, 1);
         gl.glEnd();
+*/
 
     }
+
+    public void display(GLAutoDrawable canvas) {
+        GL2 gl = canvas.getGL().getGL2();
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        if (mode == GL2.GL_RENDER) {
+            // only clear the buffers when in GL_RENDER mode. Avoids flickering
+            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
+            this.drawScene(gl);
+            construireScena(gl);
+
+
+        }
+        if (this.mouseY < 100 && this.mouseY > 50 && this.mouseX < 100 && this.mouseX > 50) {
+            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
+            this.drawScene(gl);
+            construireScena(gl);
+            gl.glRasterPos2d(0, -0.5);
+            glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "Ai Castigat!");
+        } else {
+            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
+            this.drawScene(gl);
+            construireScena(gl);
+            System.out.println(this.mouseX+ " "+ this.mouseY);
+    }
+    }
+
+    public void drawScene(GL2 gl) {
+
+        gl.glLoadIdentity();
+
+        // Remember to either add these methods or use gluLookAt(...) here.
+        // aimCamera(gl, glu);
+        // [moveCamera();
+
+
+        if (mode == GL2.GL_SELECT) {
+            // Push on the name stack the name (id) of the sphere.
+            gl.glPushName(1);
+
+        }
+
+
+        if (mode == GL2.GL_SELECT) {
+            // We are done so pop the name.
+
+            gl.glPopName();
+        }
+    }
+
 
     public void reshape(GLAutoDrawable canvas, int left, int top, int width, int height) {
         GL2 gl = canvas.getGL().getGL2();
@@ -282,6 +341,7 @@ public class MainFrame
 
         // Selecting the modelview matrix.
         gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+
     }
 
     public void displayChanged(GLAutoDrawable canvas, boolean modeChanged, boolean deviceChanged) {
@@ -291,5 +351,42 @@ public class MainFrame
     @Override
     public void dispose(GLAutoDrawable arg0) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent me) {
+        mouseX = me.getX();
+        mouseY = me.getY();
+        mode = GL2.GL_SELECT;
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
     }
 }
