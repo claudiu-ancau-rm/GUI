@@ -156,11 +156,12 @@ public class MainFrame
     }
 
     //reprezinta culoarea aleasa, acesta functie va primi rezultatul de la eventul de dat click pe una din cele 6 culori
-    public String culoareAleasa() {
-
-        return PRIMA_CULOARE;
+    public String culoareAleasa(String culoareAleasa) {
+        return culoareAleasa;
     }
-
+    public String[] culoriAlease(String[] culoriAlese) {
+        return culoriAlese;
+    }
     //definesc culorile pe care le folosesc
     public float[] culoare(String culoare) {
         float[] combinatieCuloare;
@@ -213,11 +214,11 @@ public class MainFrame
         return random;
     }
 
-    private void construireScena(GL2 gl) {
+    private void construireScena(String [] culoriAlese) {
         //patratele principale unde sunt culorile pe care trebie sa le ghicim
-        construirePoligon(culoare(culoareCorecta()[0]), new float[]{0.9f, -3, 1, 5});
-        construirePoligon(culoare(culoareCorecta()[1]), new float[]{1, 4.9f, 1, 5});
-        construirePoligon(culoare(culoareCorecta()[2]), new float[]{5, 8.9f, 5, 1});
+        construirePoligon(culoare(culoriAlese[0]), new float[]{0.9f, -3, 1, 5});
+        construirePoligon(culoare(culoriAlese[1]), new float[]{1, 4.9f, 1, 5});
+        construirePoligon(culoare(culoriAlese[2]), new float[]{5, 8.9f, 5, 1});
 
 
         //zona unde sunt incercarile de pana acum
@@ -226,21 +227,21 @@ public class MainFrame
         //combinatia de culori incercata
         int i = 0;
         while (i < 15) {
-            cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 0);
-            if (culoareAleasa() == culoareCorecta()[0]) {
+            cordonateRaspunsuriGresite(culoare(culoareAleasa(culoareCorecta()[0])), i, 0);
+            if (culoareAleasa(culoareCorecta()[0]) == culoareCorecta()[0]) {
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 0);
 
             } else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 0);
 
-            cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 0.5f);
-            if (culoareAleasa() == culoareCorecta()[1])
+            cordonateRaspunsuriGresite(culoare(culoareAleasa(culoareCorecta()[0])), i, 0.5f);
+            if (culoareAleasa(culoareCorecta()[0]) == culoareCorecta()[1])
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 0.5f);
             else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 0.5f);
 
-            cordonateRaspunsuriGresite(culoare(culoareAleasa()), i, 1);
-            if (culoareAleasa() == culoareCorecta()[2])
+            cordonateRaspunsuriGresite(culoare(culoareAleasa(culoareCorecta()[0])), i, 1);
+            if (culoareAleasa(culoareCorecta()[0]) == culoareCorecta()[2])
                 cordonateRaspunsuriCorecte(culoare("verde"), i, 1);
             else
                 cordonateRaspunsuriCorecte(culoare("rosu"), i, 1);
@@ -269,33 +270,27 @@ public class MainFrame
     public void display(GLAutoDrawable canvas) {
         GL2 gl = canvas.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-        if (mode == GL2.GL_RENDER) {
-            // only clear the buffers when in GL_RENDER mode. Avoids flickering
-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        String [] culoriAlese={"alb","alb","alb"};
+        construireScena(culoriAlese);
 
-            this.drawScene(gl);
-            construireScena(gl);
+        if (this.mouseX > 166 && this.mouseX < 254 && this.mouseY > 423 && this.mouseY < 501) {
 
-
+            culoriAlese[0]="rosu";
+            construireScena(culoriAlese);
         }
-        if (this.mouseY < 100 && this.mouseY > 50 && this.mouseX < 100 && this.mouseX > 50) {
-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        if (this.mouseX > 264 && this.mouseX < 352 && this.mouseY > 423 && this.mouseY < 501) {
 
-            this.drawScene(gl);
-            construireScena(gl);
-            gl.glRasterPos2d(0, -0.5);
-            glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "Ai Castigat!");
+            culoriAlese[0]="verde";
+            construireScena(culoriAlese);
+
         } else {
-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-
-            this.drawScene(gl);
-            construireScena(gl);
-            System.out.println(this.mouseX+ " "+ this.mouseY);
-    }
+            gl.glRasterPos2d(0, -0.5);
+            glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_24, "Alege o culoare!");
+            System.out.println(this.mouseX + " " + this.mouseY);
+        }
     }
 
     public void drawScene(GL2 gl) {
-
         gl.glLoadIdentity();
 
         // Remember to either add these methods or use gluLookAt(...) here.
@@ -306,6 +301,7 @@ public class MainFrame
         if (mode == GL2.GL_SELECT) {
             // Push on the name stack the name (id) of the sphere.
             gl.glPushName(1);
+
 
         }
 
